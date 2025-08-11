@@ -281,6 +281,13 @@ function stop() {
   if (!isRunning) return
   cancelAnimationFrame(animationId)
   isRunning = false
+  // Fully clear visuals and state so nothing lingers on screen
+  if (ctx) {
+    ctx.clearRect(0, 0, width, height)
+  }
+  drops = []
+  bolts = []
+  flashAlpha = 0
 }
 
 onMounted(() => {

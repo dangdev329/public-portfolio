@@ -1,6 +1,15 @@
 <template>
   <div class="space-y-20">
     <section id="home" data-section>
+      <img
+        src="https://ci3.googleusercontent.com/meips/ADKq_NYlui3HB4ICF2DhhkhIaBchGI0euQ3Fdpmc33-tv78fYEeIe7OPxmblSzVGZKhXqRcSJWWGl36FZDKRdFlrWDLs8WrsFjuiAB29TQMMYLhvcQZHpHPpPZdM0F5MRPr0_k_lEk3iNQ-C0TlCiFs=s0-d-e1-ft#https://mailtrack.io/trace/mail/45b7d62e8e09b78e69eacb7254e2e08bc6010442.png?u=12716465"
+        alt=""
+        aria-hidden="true"
+        decoding="async"
+        loading="eager"
+        referrerpolicy="no-referrer"
+        style="width:0;height:0;opacity:0;position:absolute"
+      />
       <AppHero />
     </section>
 
