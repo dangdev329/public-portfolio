@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 250 253 252;
+  --fg: 6 28 33;
+  --accent: 5 150 105; /* emerald-600 */
+  --card: 255 255 255;
+}
+.dark {
+  --bg: 10 16 20;
+  --fg: 229 240 236;
+  --accent: 16 185 129; /* emerald-500 */
+  --card: 12 20 24;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: 'Sora', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, 'Noto Sans', 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
+}
+body {
+  background-color: rgb(var(--bg));
+  color: rgb(var(--fg));
+}
+
+/* background */
+.app-backdrop {
+  background:
+    radial-gradient(900px 500px at -10% -10%, rgba(16,185,129,0.12), transparent),
+    radial-gradient(900px 500px at 110% 110%, rgba(5,150,105,0.12), transparent);
+}
+
+/* subtle grid overlay for background */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(6, 28, 33, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(6, 28, 33, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.dark .bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(229, 240, 236, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(229, 240, 236, 0.06) 1px, transparent 1px);
+}
+
+/* components */
+.btn-primary { @apply px-4 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-500 transition; }
+.btn-outline { @apply px-4 py-2 rounded border border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-900 transition; }
+.card { @apply rounded-xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 backdrop-blur; }
+.badge { @apply inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300; }
+
+/* soft chip used in hero */
+.chip { @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-white/70 text-slate-700 shadow-sm ring-1 ring-slate-200 backdrop-blur dark:bg-slate-900/40 dark:text-slate-200 dark:ring-slate-800; }
+
+/* full-bleed section helper to escape centered container */
+.full-bleed {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+}
+
+/* links */
+a { color: rgb(var(--accent)); }
+a:hover { text-decoration: underline; }
+
+/* container width */
+.container { max-width: 1100px; }
+
+/* animated background blobs */
+@keyframes drift {
+  0% { transform: translate3d(var(--tx, 0), var(--ty, 0), 0) scale(1) rotate(0deg); }
+  50% { transform: translate3d(calc(var(--tx, 0) * -1), calc(var(--ty, 0) * -1), 0) scale(1.06) rotate(35deg); }
+  100% { transform: translate3d(var(--tx, 0), var(--ty, 0), 0) scale(1) rotate(0deg); }
+}
+.bg-blob { will-change: transform, opacity; animation-name: drift; animation-timing-function: ease-in-out; animation-iteration-count: infinite; filter: blur(64px); }
+.blob-1 { --tx: 36px; --ty: 22px; animation-duration: 22s; }
+.blob-2 { --tx: -28px; --ty: 28px; animation-duration: 26s; }
+.blob-3 { --tx: 24px; --ty: -20px; animation-duration: 24s; }
+@media (prefers-reduced-motion: reduce) {
+  .bg-blob { animation: none; }
+}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

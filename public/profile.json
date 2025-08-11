@@ -1,0 +1,106 @@
+{
+  "title": "Full-Stack developer | Vue.js | Django | Python | React.js | Next.js",
+  "summary": "I'm a senior Full Stack developer with 5 years of experience, specialized in high-quality web/mobile apps. Proficiency: MEVN/MERN, Laravel, HTML/CSS/TS, React, Vue, Angular, Django, Flask, Node.js/Express, Databases (MongoDB, MySQL, PostgreSQL, Firebase, SQLite), REST/GraphQL/OAuth/JWT, Cloud (AWS, Azure, GCP), Git/GitHub, AI integrations (OpenAI API, OCR, Tesseract.js).",
+  "skills": {
+    "fullStack": ["MEVN", "MERN"],
+    "php": ["Laravel"],
+    "frontend": ["HTML5", "CSS3", "JavaScript", "TypeScript", "React.js", "Vue.js", "Angular"],
+    "backend": ["Django", "Flask", "Laravel", "Node.js", "Express.js"],
+    "databases": ["MongoDB", "MySQL", "PostgreSQL", "Firebase", "SQLite"],
+    "apis": ["REST", "GraphQL", "OAuth", "JWT"],
+    "cloud": ["AWS", "Microsoft", "Firebase", "Azure", "GCP"],
+    "versionControl": ["Git", "GitHub"],
+    "ai": ["OpenAI API", "OCR", "Tesseract.js"],
+    "integrations": ["UPS", "USPS", "Shopify Admin API"]
+  },
+  "projects": [
+    {
+      "name": "TalentOrange",
+      "url": "https://www.talentorange.com/",
+      "summary": "Dienstleister für Ausbildung, Qualifikation und Integration von Fachkräften im Gesundheits- und Sozialbereich.",
+      "tech": ["Vue", "Nuxt", "Tailwind CSS"],
+      "source": "https://www.talentorange.com/"
+    },
+    {
+      "name": "Warehouse Management System",
+      "url": "https://bradbury.wareswift.com/",
+      "summary": "Inventory tracking, inbound/outbound workflows, and analytics for warehouse operations.",
+      "tech": ["React", "Next.js", "Node.js"],
+      "source": "https://bradbury.wareswift.com/"
+    }
+  ],
+  "certificates": [
+    {
+      "title": "Certified Mid-Level Vue.js Developer",
+      "issuer": "Vue School / Certificates.dev",
+      "date": "2025-08-04",
+      "link": "https://certificates.dev/vuejs/certificates/9f8dea1c-8c97-4773-ac08-6b9630c43834",
+      "image": "https://certificates.dev/.netlify/images?url=https:%2F%2Fapi.certificates.dev%2Fcertificates%2Fthumbnail%2F9f8dea1c-8c97-4773-ac08-6b9630c43834.jpg"
+    },
+    {
+      "title": "EdCHART Certificate",
+      "issuer": "Credly",
+      "date": "2025-08-01",
+      "link": "https://www.credly.com/badges/83cc9426-704f-4857-935a-ddfe4c08ee9c/public_url"
+    }
+  ]
+  ,
+  "skillGroups": [
+    {
+      "title": "Frontend",
+      "items": [
+        { "name": "Vue.js", "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" },
+        { "name": "Nuxt", "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nuxtjs/nuxtjs-original.svg" },
+        { "name": "React", "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
+        { "name": "Next.js", "logo": "https://cdn.simpleicons.org/nextdotjs?viewbox=auto" },
+        { "name": "TypeScript", "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" },
+        { "name": "Tailwind CSS", "logo": "https://cdn.simpleicons.org/tailwindcss?viewbox=auto" }
+      ]
+    },
+    {
+      "title": "Backend",
+      "items": [
+        { "name": "Django", "logo": "https://cdn.simpleicons.org/django?viewbox=auto" },
+        { "name": "Flask", "logo": "https://cdn.simpleicons.org/flask?viewbox=auto" },
+        { "name": "Node.js", "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" },
+        { "name": "Express", "logo": "https://cdn.simpleicons.org/express?viewbox=auto" },
+        { "name": "Laravel", "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg" }
+      ]
+    },
+    {
+      "title": "Data & Cloud",
+      "items": [
+        { "name": "PostgreSQL", "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" },
+        { "name": "MySQL", "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" },
+        { "name": "MongoDB", "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" },
+        { "name": "Firebase", "logo": "https://cdn.simpleicons.org/firebase?viewbox=auto" },
+        { "name": "AWS", "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original.svg" },
+        { "name": "Azure", "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azure/azure-original.svg" },
+        { "name": "GCP", "logo": "https://cdn.simpleicons.org/googlecloud?viewbox=auto" }
+      ]
+    },
+    {
+      "title": "APIs & Tools",
+      "items": [
+        { "name": "GraphQL", "logo": "https://cdn.simpleicons.org/graphql?viewbox=auto" },
+        { "name": "JWT", "logo": "https://cdn.simpleicons.org/jsonwebtokens?viewbox=auto" },
+        { "name": "Git", "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" },
+        { "name": "GitHub", "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" },
+        { "name": "OpenAI", "logo": "https://cdn.simpleicons.org/openai?viewbox=auto" },
+        { "name": "Tesseract.js", "logo": "https://cdn.simpleicons.org/tesseract?viewbox=auto" }
+      ]
+    }
+  ]
+  ,
+  "skillBars": [
+    { "name": "React/Next.js", "value": 95 },
+    { "name": "TypeScript", "value": 90 },
+    { "name": "UI/UX Design", "value": 85 },
+    { "name": "CSS/Sass/Tailwind", "value": 95 },
+    { "name": "JavaScript", "value": 90 },
+    { "name": "Responsive Design", "value": 95 }
+  ],
+  "resumeUrl": "https://example.com/resume.pdf"
+}
+
+
