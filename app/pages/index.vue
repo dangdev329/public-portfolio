@@ -7,9 +7,9 @@
     <section id="projects" data-section class="full-bleed bg-slate-50/80 dark:bg-slate-900/60 border-y border-slate-200/70 dark:border-slate-800/70 py-12">
       <div class="container mx-auto px-6">
       <h2 class="text-center text-2xl md:text-3xl font-semibold">Featured Projects</h2>
-      <ul class="mt-6 grid gap-8 md:grid-cols-2" v-if="projectsToShow.length">
-        <li v-for="p in projectsToShow" :key="p._path">
-          <NuxtLink :to="p._path" class="group block">
+      <ul class="mt-6 grid gap-8 md:grid-cols-2">
+        <li v-for="p in projectsToShow" :key="p.title">
+          <div class="group block">
             <article class="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-lg transition hover:shadow-xl">
               <div class="relative h-56 md:h-64 overflow-hidden">
                 <NuxtImg v-if="p.cover" :src="p.cover" :alt="p.title" width="800" height="450" class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
@@ -22,28 +22,33 @@
                 <div class="mt-3 flex flex-wrap gap-2">
                   <span v-for="t in p.tech" :key="t" class="chip">{{ t }}</span>
                 </div>
+                <div class="mt-4 text-sm flex gap-4">
+                  <a v-if="p.links?.demo" :href="p.links.demo" target="_blank" rel="noopener" class="underline">Live</a>
+                  <a v-if="p.links?.repo" :href="p.links.repo" target="_blank" rel="noopener" class="underline">Code</a>
+                </div>
               </div>
             </article>
-          </NuxtLink>
+          </div>
         </li>
       </ul>
-      <!-- If there are truly no projects found, render nothing here. -->
+      <!-- No explicit empty state needed; we fall back to hardcoded examples. -->
       </div>
     </section>
 
     <section id="about" data-section>
-      <h2 class="text-2xl font-semibold">About</h2>
-      <div class="card p-5 mt-4">
-        <AnimateOnce :delay="80">
-          <p class="text-gray-700">Full‑Stack developer (5+ years) shipping production‑grade apps with a focus on UX, performance, and reliability.</p>
-        </AnimateOnce>
-        <ul class="mt-3 list-disc pl-5 text-gray-700 space-y-1">
-          <li><span class="font-medium">Frontend</span>: Vue/Nuxt, React/Next.js, TypeScript</li>
-          <li><span class="font-medium">Backend</span>: Django/Flask, Node/Express, Laravel</li>
-          <li><span class="font-medium">Data & Cloud</span>: PostgreSQL, MySQL, MongoDB, Firebase · AWS/Azure/GCP</li>
-          <li><span class="font-medium">APIs</span>: REST, GraphQL, OAuth/JWT</li>
-        </ul>
-      </div>
+      <h2 class="text-2xl font-semibold">Certificates</h2>
+      <ul class="mt-4 grid gap-6 md:grid-cols-2">
+        <li v-for="c in certs" :key="c.title">
+          <article class="card p-5">
+            <div v-if="c.thumb" class="mb-3 w-full h-48 md:h-56 flex items-center justify-center overflow-hidden">
+              <img :src="c.thumb" :alt="c.title" class="max-h-full w-auto object-contain rounded-md border border-slate-200 dark:border-slate-800" loading="lazy" decoding="async" />
+            </div>
+            <h3 class="text-lg font-medium">{{ c.title }}</h3>
+            <p class="text-gray-600">{{ c.issuer }} — {{ c.date }}</p>
+            <div class="mt-2" v-if="c.links?.url"><a class="text-emerald-600 underline" :href="c.links.url" target="_blank" rel="noopener">View</a></div>
+          </article>
+        </li>
+      </ul>
     </section>
 
     <section id="skills" data-section>
@@ -56,29 +61,9 @@
       </div>
     </section>
 
-    <section id="certificates" data-section>
-      <h2 class="text-2xl font-semibold">Certificates</h2>
-      <ul class="mt-4 grid gap-6 md:grid-cols-2">
-        <li v-for="c in certs" :key="c.title">
-          <article class="card p-5">
-            <h3 class="text-lg font-medium">{{ c.title }}</h3>
-            <p class="text-gray-600">{{ c.issuer }} — {{ c.date }}</p>
-            <div class="mt-2" v-if="c.links?.url"><a class="text-emerald-600 underline" :href="c.links.url" target="_blank" rel="noopener">View</a></div>
-          </article>
-        </li>
-      </ul>
-    </section>
+    
 
-    <section id="contact" data-section>
-      <h2 class="text-2xl font-semibold">Let's Connect</h2>
-      <div class="card p-5 mt-4">
-        <p class="text-gray-700">Ready to collaborate or have a project in mind? Let's make something amazing together.</p>
-        <div class="mt-4 flex gap-3 flex-wrap">
-          <a :href="mailtoHref" class="btn-primary">Get in Touch</a>
-          <a v-if="resumeUrl" :href="resumeUrl" target="_blank" rel="noopener" class="btn-outline">View Resume</a>
-        </div>
-      </div>
-    </section>
+    
   </div>
 </template>
 
@@ -88,33 +73,73 @@ useHead({ title: 'Dang — Portfolio' })
 import type { Ref } from 'vue'
 
 type ProjectDoc = {
-  _path: string
+  _path?: string
   title: string
   summary?: string
   cover?: string
   tech?: string[]
   links?: { repo?: string; demo?: string }
+  featured?: boolean
+  slug?: string
 }
 
 // Provide a lightweight type shim so linter is happy without generated #content types
 declare function queryContent<T = any>(path?: string): any
 
-const { data: featured } = await useAsyncData<ProjectDoc[]>('featured-projects', () =>
-  queryContent('projects').where({ featured: true }).sort({ publishedAt: -1 }).find()
+const { data: allProjects } = await useAsyncData<ProjectDoc[]>('home-projects', () =>
+  queryContent('/projects').sort({ publishedAt: -1 }).find()
 )
-const { data: recent } = await useAsyncData<ProjectDoc[]>('recent-projects', () =>
-  queryContent('projects').sort({ publishedAt: -1 }).limit(2).find()
-)
+
+// We only want to show these two projects on the homepage
+const preferredSlugs = ['talentorange', 'warehouse-management']
+
+const hardcodedFallback: ProjectDoc[] = [
+  {
+    title: 'TalentOrange',
+    summary:
+      'Customized recruitment and headhunting application that manages the entire talent acquisition process.',
+    cover: '/cover/talentorange.png',
+    tech: ['Vue 3', 'GraphQL', 'PHP', 'MySQL', 'Docker'],
+    links: { demo: 'https://www.talentorange.com/' }
+  },
+  {
+    title: 'Warehouse Management System',
+    summary:
+      'Inventory tracking, inbound/outbound workflows, and analytics for warehouse operations.',
+    cover: '/cover/wareswift.png',
+    tech: ['Vue2', 'Quasar', 'Django', 'SQLite'],
+    links: { demo: 'https://bradbury.wareswift.com/' }
+  }
+]
 
 const projectsToShow = computed<ProjectDoc[]>(() => {
-  if (Array.isArray(featured?.value) && featured.value.length > 0) return featured.value
-  if (Array.isArray(recent?.value)) return recent.value
-  return []
+  const list = Array.isArray(allProjects?.value) ? allProjects.value : []
+  if (list.length) {
+    const bySlug = new Map<string | undefined, ProjectDoc>(list.map(p => [p.slug, p]))
+    const chosen = preferredSlugs
+      .map(slug => bySlug.get(slug))
+      .filter(Boolean) as ProjectDoc[]
+    if (chosen.length) return chosen
+  }
+  return hardcodedFallback
 })
 
-const certs = [
-  { title: 'Certified Mid-Level Vue.js Developer', issuer: 'Vue School / Certificates.dev', date: '2025-08-04', links: { url: 'https://certificates.dev/vuejs/certificates/9f8dea1c-8c97-4773-ac08-6b9630c43834' } },
-  { title: 'EdCHART Certificate', issuer: 'Credly', date: '2025-08-01', links: { url: 'https://www.credly.com/badges/83cc9426-704f-4857-935a-ddfe4c08ee9c/public_url' } }
+type CertItem = { title: string; issuer: string; date: string; links?: { url?: string }; thumb?: string }
+const certs: CertItem[] = [
+  {
+    title: 'Certified Mid-Level Vue.js Developer',
+    issuer: 'Vue School / Certificates.dev',
+    date: '2025-08-04',
+    links: { url: 'https://certificates.dev/vuejs/certificates/9f8dea1c-8c97-4773-ac08-6b9630c43834' },
+    thumb: 'https://certificates.dev/.netlify/images?url=https:%2F%2Fapi.certificates.dev%2Fcertificates%2Fthumbnail%2F9f8dea1c-8c97-4773-ac08-6b9630c43834.jpg'
+  },
+  {
+    title: 'EdCHART Certificate',
+    issuer: 'Credly',
+    date: 'July 28, 2025',
+    links: { url: 'https://www.credly.com/badges/83cc9426-704f-4857-935a-ddfe4c08ee9c/public_url' },
+    thumb: 'https://images.credly.com/size/680x680/images/ced4e767-f9ae-4003-a871-781a6fce80db/image.png'
+  }
 ]
 
 // Load skill groups from single JSON source (client-side for reliability)

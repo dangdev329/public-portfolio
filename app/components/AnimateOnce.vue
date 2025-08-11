@@ -1,30 +1,44 @@
 <template>
-  <div
-    v-reveal="{ classes: 'animate-in fade-in-0 slide-in-from-bottom-2 duration-700' }"
-    :style="delayStyle"
-    v-bind="$attrs"
-  >
-    <slot />
-  </div>
+  <ClientOnly>
+    <div ref="rootEl" :class="revealed ? revealClasses : ''" :style="delayStyle" v-bind="$attrs">
+      <slot />
+    </div>
+    <template #fallback>
+      <div v-bind="$attrs">
+        <slot />
+      </div>
+    </template>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
 defineOptions({ inheritAttrs: false })
 const props = withDefaults(defineProps<{
-  initial?: Record<string, unknown>
-  enter?: Record<string, unknown>
   delay?: number
-  hovered?: Record<string, unknown>
+  classes?: string
 }>(), {
-  initial: () => ({ y: 12, opacity: 0 }),
-  enter: () => ({ y: 0, opacity: 1 }),
   delay: 0,
-  hovered: () => ({})
+  classes: 'animate-in fade-in-0 slide-in-from-bottom-2 duration-700'
 })
 
-const delayStyle = computed(() =>
-  props.delay ? ({ transitionDelay: `${props.delay}ms` } as Record<string, string>) : undefined
-)
+const rootEl = ref<HTMLElement | null>(null)
+const revealed = ref(false)
+const revealClasses = computed(() => props.classes)
+const delayStyle = computed(() => (props.delay ? ({ transitionDelay: `${props.delay}ms` } as Record<string, string>) : undefined))
+
+onMounted(() => {
+  const el = rootEl.value
+  if (!el) return
+  const observer = new IntersectionObserver((entries, obs) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        revealed.value = true
+        obs.unobserve(entry.target)
+      }
+    }
+  }, { threshold: 0.2 })
+  observer.observe(el)
+})
 </script>
 
 

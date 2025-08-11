@@ -1,6 +1,6 @@
 <template>
   <ClientOnly>
-    <canvas ref="canvasRef" class="fixed inset-0 pointer-events-none z-[50] mix-blend-screen" aria-hidden="true" />
+    <canvas v-show="shouldRender" ref="canvasRef" class="fixed inset-0 pointer-events-none z-[30] mix-blend-screen" aria-hidden="true" />
   </ClientOnly>
 </template>
 
@@ -16,6 +16,7 @@ type Raindrop = {
 }
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
+const shouldRender = ref(true)
 let ctx: CanvasRenderingContext2D | null = null
 let width = 0
 let height = 0
@@ -23,26 +24,31 @@ let dpr = 1
 let animationId = 0
 let isRunning = false
 let lastFrameTime = 0
-const targetFps = 42
+const targetFps = 30
 const frameIntervalMs = 1000 / targetFps
 let drops: Raindrop[] = []
 // Tweak this to change overall rain speed (higher = faster)
 const speedMultiplier = 2.0
 
-// Lightning flash state
+// Keep lightning effect enabled with performance safeguards
+const enableLightning = true
 let flashAlpha = 0
-let nextFlashAt = performance.now() + getRandom(4000, 11000)
-  const flashDecayPerMs = 0.003 // higher = shorter flash duration
+let nextFlashAt = performance.now() + getRandom(6000, 14000)
+const flashDecayPerMs = 0.003
 
-  // Lightning bolt visuals
-  type LightningBolt = {
-    points: Array<{ x: number; y: number }>
-    alpha: number
-    lineWidth: number
-    lifeMs: number
-    ageMs: number
-  }
-  let bolts: LightningBolt[] = []
+type LightningBolt = {
+  points: Array<{ x: number; y: number }>
+  alpha: number
+  lineWidth: number
+  lifeMs: number
+  ageMs: number
+}
+let bolts: LightningBolt[] = []
+
+// Adaptive performance controls
+let frameTimeAvg = 16
+let densityScale = 1.0 // 1.0 = full density; drops when device is busy
+let lastDensityAdjustAt = 0
 
 function getRandom(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min
@@ -93,9 +99,39 @@ function initDrops(count: number) {
   }))
 }
 
+function computeTargetDrops(): number {
+  // Density scaled for performance
+  const prefersReducedMotion = matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches
+  const isMobile = width < 768 || 'ontouchstart' in window
+  const area = width * height
+  let target = Math.round((area / 20000) * densityScale)
+  if (dpr > 1.15) target = Math.round(target * 0.7)
+  if (isMobile) target = Math.round(target * 0.55)
+  if (prefersReducedMotion) target = Math.round(target * 0.3)
+  return Math.max(18, Math.min(110, target))
+}
+
+function ensureDropCount(target: number) {
+  if (target === drops.length) return
+  if (target < drops.length) {
+    drops.length = target
+  } else {
+    const toAdd = target - drops.length
+    for (let i = 0; i < toAdd; i++) {
+      drops.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        len: 8 + Math.random() * 16,
+        speedY: (6 + Math.random() * 8) * speedMultiplier,
+        driftX: -0.6 + Math.random() * 1.2
+      })
+    }
+  }
+}
+
 function resize() {
   if (!canvasRef.value) return
-  dpr = Math.min(window.devicePixelRatio || 1, 1.5)
+  dpr = Math.min(window.devicePixelRatio || 1, 1.25)
   width = window.innerWidth
   height = window.innerHeight
   canvasRef.value.width = Math.floor(width * dpr)
@@ -105,17 +141,14 @@ function resize() {
   ctx = canvasRef.value.getContext('2d')
   if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
-  // Density scaled for performance
-  const prefersReducedMotion = matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches
-  const isMobile = width < 768 || 'ontouchstart' in window
-  const area = width * height
-  let target = Math.round(area / 14000) // lower base density for performance
-  if (dpr > 1.25) target = Math.round(target * 0.7)
-  if (isMobile) target = Math.round(target * 0.6)
-  if (prefersReducedMotion) target = Math.round(target * 0.4)
-  target = Math.max(30, Math.min(160, target))
+  const target = computeTargetDrops()
+  if (drops.length === 0) initDrops(target)
+  else ensureDropCount(target)
 
-  if (drops.length === 0 || drops.length !== target) initDrops(target)
+  // Re-evaluate gating on resize (desktop should keep rain unless reduced-motion)
+  const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  shouldRender.value = !reducedMotion
+  if (!shouldRender.value) stop()
 }
 
 function step(now = performance.now()) {
@@ -126,6 +159,15 @@ function step(now = performance.now()) {
   }
   const dt = now - lastFrameTime
   lastFrameTime = now
+
+  // Update moving average frame time and adapt density every ~1s
+  frameTimeAvg = frameTimeAvg * 0.9 + dt * 0.1
+  if (now - lastDensityAdjustAt > 1000) {
+    const busy = frameTimeAvg > frameIntervalMs * 1.4
+    densityScale = busy ? 0.8 : 1.0
+    ensureDropCount(computeTargetDrops())
+    lastDensityAdjustAt = now
+  }
 
   ctx.clearRect(0, 0, width, height)
   ctx.save()
@@ -153,65 +195,49 @@ function step(now = performance.now()) {
   }
   ctx.stroke()
   
-  // Lightning flash overlay (brighten background briefly)
-  if (now >= nextFlashAt && flashAlpha <= 0.001) {
-    // Start a flash
-    flashAlpha = isDark.value ? 0.92 : 0.78
-    nextFlashAt = now + getRandom(5000, 14000)
-    // Spawn 1-2 bolts
-    const boltsToCreate = Math.random() < 0.6 ? 1 : 2
-    for (let i = 0; i < boltsToCreate; i++) {
-      bolts.push(generateBolt())
-    }
-    // Emit event so sound component can play thunder
-    window.dispatchEvent(new CustomEvent('rain:flash', { detail: { intensity: Math.min(1, 0.6 + Math.random() * 0.5) } }))
-  }
-  if (flashAlpha > 0.001) {
-    flashAlpha = Math.max(0, flashAlpha - dt * flashDecayPerMs)
-    ctx.fillStyle = `rgba(255,255,255,${flashAlpha.toFixed(3)})`
-    ctx.fillRect(0, 0, width, height)
-  }
-
-  // Draw lightning bolts
-  if (bolts.length) {
-    // Use additive blending for vivid glow, then restore
-    const prevOp = ctx.globalCompositeOperation
-    const prevShadowBlur = ctx.shadowBlur
-    const prevShadowColor = (ctx as any).shadowColor
-    ctx.globalCompositeOperation = 'lighter'
-    ctx.lineCap = 'round'
-    ctx.shadowBlur = 14
-    ;(ctx as any).shadowColor = 'rgba(255,255,255,0.9)'
-
-    const remaining: LightningBolt[] = []
-    for (const b of bolts) {
-      b.ageMs += dt
-      const t = Math.min(1, b.ageMs / b.lifeMs)
-      const alpha = b.alpha * (1 - t)
-      if (alpha <= 0.02) continue
-
-      // Core bright stroke
-      ctx.beginPath()
-      ctx.moveTo(b.points[0].x, b.points[0].y)
-      for (let i = 1; i < b.points.length; i++) {
-        ctx.lineTo(b.points[i].x, b.points[i].y)
+  if (enableLightning) {
+    // Lightning flash overlay (brighten background briefly)
+    const busy = frameTimeAvg > frameIntervalMs * 1.5
+    if (!busy && now >= nextFlashAt && flashAlpha <= 0.001 && bolts.length < 2) {
+      flashAlpha = isDark.value ? 0.9 : 0.75
+      nextFlashAt = now + getRandom(7000, 15000)
+      const boltsToCreate = Math.random() < 0.55 ? 1 : 2
+      for (let i = 0; i < boltsToCreate; i++) {
+        bolts.push(generateBolt())
       }
-      ctx.lineWidth = Math.max(1, b.lineWidth * (1 - t))
-      ctx.strokeStyle = `rgba(255,255,255,${Math.min(1, 0.9 * alpha)})`
-      ctx.stroke()
-
-      // Outer faint stroke for extra glow
-      ctx.lineWidth = Math.max(1, (b.lineWidth + 2) * (1 - t))
-      ctx.strokeStyle = `rgba(200,230,255,${0.25 * alpha})`
-      ctx.stroke()
-
-      if (b.ageMs < b.lifeMs) remaining.push(b)
+    }
+    if (flashAlpha > 0.001) {
+      flashAlpha = Math.max(0, flashAlpha - dt * flashDecayPerMs)
+      ctx.fillStyle = `rgba(255,255,255,${flashAlpha.toFixed(3)})`
+      ctx.fillRect(0, 0, width, height)
     }
 
-    ctx.globalCompositeOperation = prevOp
-    ctx.shadowBlur = prevShadowBlur
-    ;(ctx as any).shadowColor = prevShadowColor
-    bolts = remaining
+    // Draw lightning bolts (reduced glow)
+    if (bolts.length && ctx) {
+      const ctx2 = ctx
+      const prevShadowBlur = ctx2.shadowBlur
+      ctx2.lineCap = 'round'
+      ctx2.shadowBlur = 6
+      const remaining: LightningBolt[] = []
+      for (const b of bolts) {
+        b.ageMs += dt
+        const t = Math.min(1, b.ageMs / b.lifeMs)
+        const alpha = b.alpha * (1 - t)
+        if (alpha <= 0.03) continue
+        if (b.points.length === 0) continue
+        ctx2.beginPath()
+        ctx2.moveTo(b.points[0]!.x, b.points[0]!.y)
+        for (let i = 1; i < b.points.length; i++) {
+          ctx2.lineTo(b.points[i]!.x, b.points[i]!.y)
+        }
+        ctx2.lineWidth = Math.max(1, b.lineWidth * (1 - t))
+        ctx2.strokeStyle = `rgba(255,255,255,${Math.min(1, 0.85 * alpha)})`
+        ctx2.stroke()
+        if (b.ageMs < b.lifeMs) remaining.push(b)
+      }
+      ctx2.shadowBlur = prevShadowBlur
+      bolts = remaining
+    }
   }
   ctx.restore()
 
@@ -234,12 +260,20 @@ function stop() {
 onMounted(() => {
   // In case the canvas is already in DOM
   resize()
+  // Respect reduced motion only; keep rain for desktop/mobile otherwise
+  const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  shouldRender.value = !reducedMotion
   window.addEventListener('resize', resize, { passive: true })
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) stop()
     else start()
   }, { passive: true })
-  start()
+  if (shouldRender.value) start()
+})
+
+watch(shouldRender, (on) => {
+  if (on) start()
+  else stop()
 })
 
 // Ensure we initialize once the <canvas> actually exists (ClientOnly timing)

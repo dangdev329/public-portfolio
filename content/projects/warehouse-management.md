@@ -2,10 +2,10 @@
 title: Warehouse Management System
 slug: warehouse-management
 summary: Inventory tracking, inbound/outbound workflows, and analytics for warehouse operations.
-tech: [React, Next.js, Node.js]
+tech: [Vue2, Quasar, Django, SQLite]
 links:
   demo: https://bradbury.wareswift.com/
-cover: /cover/nuxt-portfolio.webp
+cover: /cover/wareswift.png
 featured: true
 publishedAt: 2025-08-01
 ---

@@ -6,9 +6,7 @@
       </NuxtLink>
       <div class="flex items-center gap-5 text-sm">
         <NuxtLink :class="{ 'text-emerald-600': active==='projects' }" to="#projects">Projects</NuxtLink>
-        <NuxtLink :class="{ 'text-emerald-600': active==='about' }" to="#about">About</NuxtLink>
         <NuxtLink :class="{ 'text-emerald-600': active==='skills' }" to="#skills">Skills</NuxtLink>
-        <NuxtLink :class="{ 'text-emerald-600': active==='certificates' }" to="#certificates">Certificates</NuxtLink>
         <ClientOnly>
           <AppSoundToggle />
         </ClientOnly>
