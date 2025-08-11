@@ -29,6 +29,26 @@
       "source": "https://bradbury.wareswift.com/"
     }
   ],
+  "testimonials": [
+    {
+      "name": "Jay Grieves",
+      "title": "Co‑Founder of Ecor Rouge",
+      "quote": "We hired Dang for a short Python/Vue3 project and he turned it around very quickly!",
+      "avatar": "https://media.licdn.com/dms/image/v2/C5603AQH97eVTe13OYw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1516258920956?e=1757548800&v=beta&t=nXCQG9WjvMLgp1uGm5USUDxqw6ze5VStR4nhYz9LdwI"
+    },
+    {
+      "name": "Rachid El Kedmiri",
+      "title": "Project Manager at Yearnings.Inc",
+      "quote": "Highly recommended. Has a very good grasp of the Vue.js framework.",
+      "avatar": "https://media.licdn.com/dms/image/v2/D4E03AQFtIK2hc3SfiA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1655856246810?e=1757548800&v=beta&t=q4a38odzt5WQoKz1ecx_3HI9CfNh-_MYUGxGHoOOk0E"
+    },
+    {
+      "name": "Kim Fanger",
+      "title": "Hiring Manager at Elunic AG",
+      "quote": "Thanh Dang is a reliable freelancer and we enjoy working with him.",
+      "avatar": "https://media.licdn.com/dms/image/v2/D4D03AQEn2dsDUffjUQ/profile-displayphoto-shrink_200_200/B4DZaH19XZGwAo-/0/1746035791710?e=1757548800&v=beta&t=bnn9VmrZiAJvE2FG796v-RyDKK4ZFJq0pIKrCjwOs8Y"
+    }
+  ],
   "certificates": [
     {
       "title": "Certified Vue.js Developer",
@@ -93,15 +113,16 @@
   ]
   ,
   "skillBars": [
-    { "name": "JavaScript", "value": 95 },
-    { "name": "TypeScript", "value": 92 },
-    { "name": "React.js / Next.js", "value": 94 },
+    { "name": "JavaScript", "value": 98 },
+    { "name": "TypeScript", "value": 97 },
+    { "name": "React.js", "value": 99 },
+    { "name": "Next.js", "value": 97 },
     { "name": "Vue.js", "value": 99 },
     { "name": "Nuxt.js", "value": 95 },
-    { "name": "Node.js", "value": 90 },
+    { "name": "Node.js", "value": 96 },
     { "name": "Django", "value": 98 },
     { "name": "Flask", "value": 96 },
-    { "name": "FastAPI", "value": 96 }
+    { "name": "FastAPI", "value": 95 }
   ],
   "resumeUrl": "https://example.com/resume.pdf"
 }

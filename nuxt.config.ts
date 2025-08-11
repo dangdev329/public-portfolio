@@ -47,7 +47,8 @@ export default defineNuxtConfig({
     domains: [
       'certificates.dev',
       'api.certificates.dev',
-      'images.credly.com'
+      'images.credly.com',
+      'media.licdn.com'
     ]
   },
   site: {

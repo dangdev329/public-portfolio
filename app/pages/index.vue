@@ -58,6 +58,13 @@
       </div>
     </section>
 
+    <section id="testimonials" data-section>
+      <h2 class="text-2xl font-semibold">Testimonials</h2>
+      <div class="mt-4">
+        <AppTestimonials :items="testimonials" />
+      </div>
+    </section>
+
     
 
     
@@ -192,6 +199,8 @@ type ProfileJson = { skillGroups?: SkillGroup[] }
 const skillGroups = ref<SkillGroup[]>([])
 type SkillBarItem = { name: string; value: number }
 const skillBars = ref<SkillBarItem[]>([])
+type Testimonial = { name: string; title?: string; quote: string; avatar?: string }
+const testimonials = ref<Testimonial[]>([])
 const resumeUrl = ref<string | null>(null)
 const email = 'hello@example.com'
 const mailtoHref = computed(() => `mailto:${email}?subject=${encodeURIComponent('Project inquiry — Portfolio')}`)
@@ -201,6 +210,7 @@ onMounted(async () => {
     const data: any = await res.json()
     if (Array.isArray(data?.skillGroups)) skillGroups.value = data.skillGroups
     if (Array.isArray(data?.skillBars)) skillBars.value = data.skillBars
+    if (Array.isArray(data?.testimonials)) testimonials.value = data.testimonials
     if (typeof data?.resumeUrl === 'string') resumeUrl.value = data.resumeUrl
   } catch {}
 })
