@@ -32,7 +32,7 @@
       </div>
     </section>
 
-    <section id="about" data-section>
+    <section id="certificates" data-section>
       <h2 class="text-2xl md:text-3xl font-semibold">Certificates</h2>
       <ul class="mt-6 grid gap-8 sm:grid-cols-2">
         <li v-for="c in certs" :key="c.title">
