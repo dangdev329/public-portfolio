@@ -1,5 +1,5 @@
 ---
-title: Certified Mid-Level Vue.js Developer
+title: Certified Vue.js Developer
 slug: vue-school
 issuer: Vue School / Certificates.dev
 date: 2025-08-04

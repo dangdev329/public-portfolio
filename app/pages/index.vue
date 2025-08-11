@@ -7,44 +7,41 @@
     <section id="projects" data-section class="full-bleed bg-slate-50/80 dark:bg-slate-900/60 border-y border-slate-200/70 dark:border-slate-800/70 py-12">
       <div class="container mx-auto px-6">
       <h2 class="text-center text-2xl md:text-3xl font-semibold">Featured Projects</h2>
-      <ul class="mt-6 grid gap-8 md:grid-cols-2">
-        <li v-for="p in projectsToShow" :key="p.title">
-          <div class="group block">
-            <article class="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-lg transition hover:shadow-xl">
+      <ul class="mt-6 grid gap-8 md:grid-cols-2 items-stretch">
+        <li v-for="p in projectsToShow" :key="p.title" class="h-full">
+          <div class="group block h-full">
+            <article class="h-full flex flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-lg transition hover:shadow-xl cursor-pointer" @click="openProject(p)">
               <div class="relative h-56 md:h-64 overflow-hidden">
                 <NuxtImg v-if="p.cover" :src="p.cover" :alt="p.title" width="800" height="450" class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div v-else class="absolute inset-0 flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-500 text-sm">No image available</div>
                 <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-white dark:to-slate-900"></div>
               </div>
-              <div class="p-5">
+              <div class="p-5 flex-1 flex flex-col">
                 <h3 class="text-lg font-semibold">{{ p.title }}</h3>
                 <p class="mt-1 text-gray-600 dark:text-gray-300">{{ p.summary }}</p>
-                <div class="mt-3 flex flex-wrap gap-2">
+                <div class="mt-3 flex flex-wrap gap-2 mt-auto">
                   <span v-for="t in p.tech" :key="t" class="chip">{{ t }}</span>
-                </div>
-                <div class="mt-4 text-sm flex gap-4">
-                  <a v-if="p.links?.demo" :href="p.links.demo" target="_blank" rel="noopener" class="underline">Live</a>
-                  <a v-if="p.links?.repo" :href="p.links.repo" target="_blank" rel="noopener" class="underline">Code</a>
                 </div>
               </div>
             </article>
           </div>
         </li>
       </ul>
+      <ProjectModal :open="isModalOpen" :project="activeProject" @close="isModalOpen=false" />
       <!-- No explicit empty state needed; we fall back to hardcoded examples. -->
       </div>
     </section>
 
     <section id="about" data-section>
-      <h2 class="text-2xl font-semibold">Certificates</h2>
-      <ul class="mt-4 grid gap-6 md:grid-cols-2">
+      <h2 class="text-2xl md:text-3xl font-semibold">Certificates</h2>
+      <ul class="mt-6 grid gap-8 sm:grid-cols-2">
         <li v-for="c in certs" :key="c.title">
-          <article class="card p-5">
-            <div v-if="c.thumb" class="mb-3 w-full h-48 md:h-56 flex items-center justify-center overflow-hidden">
-              <img :src="c.thumb" :alt="c.title" class="max-h-full w-auto object-contain rounded-md border border-slate-200 dark:border-slate-800" loading="lazy" decoding="async" />
+          <article class="card p-7 md:p-8">
+            <div v-if="c.thumb" class="mb-4 w-full h-72 md:h-80 flex items-center justify-center overflow-hidden">
+              <NuxtImg :src="c.thumb" :alt="c.title" width="960" height="960" class="max-h-full w-auto object-contain rounded-md border border-slate-200 dark:border-slate-800" loading="lazy" />
             </div>
-            <h3 class="text-lg font-medium">{{ c.title }}</h3>
-            <p class="text-gray-600">{{ c.issuer }} — {{ c.date }}</p>
+            <h3 class="text-2xl font-semibold">{{ c.title }}</h3>
+            <p class="text-gray-600 mt-2">{{ c.issuer }} — {{ c.date }}</p>
             <div class="mt-2" v-if="c.links?.url"><a class="text-emerald-600 underline" :href="c.links.url" target="_blank" rel="noopener">View</a></div>
           </article>
         </li>
@@ -81,6 +78,10 @@ type ProjectDoc = {
   links?: { repo?: string; demo?: string }
   featured?: boolean
   slug?: string
+  role?: string
+  longDesc?: string
+  features?: string[]
+  integrations?: string[]
 }
 
 // Provide a lightweight type shim so linter is happy without generated #content types
@@ -100,7 +101,11 @@ const hardcodedFallback: ProjectDoc[] = [
       'Customized recruitment and headhunting application that manages the entire talent acquisition process.',
     cover: '/cover/talentorange.png',
     tech: ['Vue 3', 'GraphQL', 'PHP', 'MySQL', 'Docker'],
-    links: { demo: 'https://www.talentorange.com/' }
+    links: { demo: 'https://www.talentorange.com/' },
+    role: 'Frontend Developer',
+    longDesc:
+      'Customized recruitment and headhunting application that manages the entire talent acquisition process.',
+    features: ['Candidate Management', 'Project Management', 'Recruitment Process', 'Client Management']
   },
   {
     title: 'Warehouse Management System',
@@ -108,7 +113,17 @@ const hardcodedFallback: ProjectDoc[] = [
       'Inventory tracking, inbound/outbound workflows, and analytics for warehouse operations.',
     cover: '/cover/wareswift.png',
     tech: ['Vue2', 'Quasar', 'Django', 'SQLite'],
-    links: { demo: 'https://bradbury.wareswift.com/' }
+    links: { demo: 'https://bradbury.wareswift.com/' },
+    role: 'Full‑Stack Developer',
+    longDesc:
+      'Built a full-stack Django/Vue.js application with multi-platform support (web, mobile, desktop), barcode scanning, real-time inventory tracking, and comprehensive warehouse operations management.',
+    features: [
+      'Barcode scanning',
+      'Real-time inventory tracking',
+      'Inbound/outbound workflows',
+      'Multi-platform support (web, mobile, desktop)'
+    ],
+    integrations: ['UPS', 'USPS', 'Amazon', 'Shopify']
   }
 ]
 
@@ -124,10 +139,38 @@ const projectsToShow = computed<ProjectDoc[]>(() => {
   return hardcodedFallback
 })
 
+const isModalOpen = ref(false)
+const activeProject = ref<ProjectDoc | null>(null)
+const detailsMap: Record<string, Partial<ProjectDoc>> = {
+  talentorange: {
+    role: 'Frontend Developer',
+    longDesc:
+      'Customized recruitment and headhunting application that manages the entire talent acquisition process.',
+    features: ['Candidate Management', 'Project Management', 'Recruitment Process', 'Client Management']
+  },
+  'warehouse-management': {
+    role: 'Full‑Stack Developer',
+    longDesc:
+      'Built a full-stack Django/Vue.js application with multi-platform support (web, mobile, desktop), barcode scanning, real-time inventory tracking, and comprehensive warehouse operations management.',
+    features: [
+      'Barcode scanning',
+      'Real-time inventory tracking',
+      'Inbound/outbound workflows',
+      'Multi-platform support (web, mobile, desktop)'
+    ],
+    integrations: ['UPS', 'USPS', 'Amazon', 'Shopify']
+  }
+}
+function openProject(p: ProjectDoc) {
+  const extra = p.slug ? detailsMap[p.slug] : undefined
+  activeProject.value = { ...p, ...(extra || {}) }
+  isModalOpen.value = true
+}
+
 type CertItem = { title: string; issuer: string; date: string; links?: { url?: string }; thumb?: string }
 const certs: CertItem[] = [
   {
-    title: 'Certified Mid-Level Vue.js Developer',
+    title: 'Certified Vue.js Developer',
     issuer: 'Vue School / Certificates.dev',
     date: '2025-08-04',
     links: { url: 'https://certificates.dev/vuejs/certificates/9f8dea1c-8c97-4773-ac08-6b9630c43834' },

@@ -216,8 +216,12 @@ function step(now = performance.now()) {
     if (bolts.length && ctx) {
       const ctx2 = ctx
       const prevShadowBlur = ctx2.shadowBlur
+      const prevComposite = ctx2.globalCompositeOperation
       ctx2.lineCap = 'round'
-      ctx2.shadowBlur = 6
+      // Glorious glow when not busy; otherwise modest blur
+      const busyDraw = frameTimeAvg > frameIntervalMs * 1.5
+      ctx2.shadowBlur = busyDraw ? 8 : 14
+      ctx2.globalCompositeOperation = 'lighter'
       const remaining: LightningBolt[] = []
       for (const b of bolts) {
         b.ageMs += dt
@@ -225,16 +229,38 @@ function step(now = performance.now()) {
         const alpha = b.alpha * (1 - t)
         if (alpha <= 0.03) continue
         if (b.points.length === 0) continue
+        // Core bright stroke
         ctx2.beginPath()
         ctx2.moveTo(b.points[0]!.x, b.points[0]!.y)
-        for (let i = 1; i < b.points.length; i++) {
-          ctx2.lineTo(b.points[i]!.x, b.points[i]!.y)
-        }
+        for (let i = 1; i < b.points.length; i++) ctx2.lineTo(b.points[i]!.x, b.points[i]!.y)
         ctx2.lineWidth = Math.max(1, b.lineWidth * (1 - t))
-        ctx2.strokeStyle = `rgba(255,255,255,${Math.min(1, 0.85 * alpha)})`
+        ctx2.strokeStyle = `rgba(255,255,255,${Math.min(1, 0.95 * alpha)})`
         ctx2.stroke()
+
+        // Outer cyan glow stroke
+        ctx2.lineWidth = Math.max(1, (b.lineWidth + 3) * (1 - t))
+        ctx2.strokeStyle = `rgba(150,220,255,${0.35 * alpha})`
+        ctx2.stroke()
+
+        // Small side branches for extra realism (cheap)
+        if (!busyDraw) {
+          for (let i = 2; i < b.points.length - 1; i += 2) {
+            if (Math.random() < 0.25) {
+              const p = b.points[i]!
+              const offX = p.x + getRandom(-20, 20)
+              const offY = p.y + getRandom(10, 40)
+              ctx2.beginPath()
+              ctx2.moveTo(p.x, p.y)
+              ctx2.lineTo(offX, offY)
+              ctx2.lineWidth = Math.max(1, (b.lineWidth - 1) * (1 - t))
+              ctx2.strokeStyle = `rgba(200,240,255,${0.25 * alpha})`
+              ctx2.stroke()
+            }
+          }
+        }
         if (b.ageMs < b.lifeMs) remaining.push(b)
       }
+      ctx2.globalCompositeOperation = prevComposite
       ctx2.shadowBlur = prevShadowBlur
       bolts = remaining
     }

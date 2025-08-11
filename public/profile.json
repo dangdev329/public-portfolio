@@ -31,7 +31,7 @@
   ],
   "certificates": [
     {
-      "title": "Certified Mid-Level Vue.js Developer",
+      "title": "Certified Vue.js Developer",
       "issuer": "Vue School / Certificates.dev",
       "date": "2025-08-04",
       "link": "https://certificates.dev/vuejs/certificates/9f8dea1c-8c97-4773-ac08-6b9630c43834",
@@ -96,9 +96,12 @@
     { "name": "JavaScript", "value": 95 },
     { "name": "TypeScript", "value": 92 },
     { "name": "React.js / Next.js", "value": 94 },
-    { "name": "Vue.js / Nuxt.js", "value": 100 },
+    { "name": "Vue.js", "value": 99 },
+    { "name": "Nuxt.js", "value": 95 },
     { "name": "Node.js", "value": 90 },
-    { "name": "Django / Flask / FastAPI", "value": 98 }
+    { "name": "Django", "value": 98 },
+    { "name": "Flask", "value": 96 },
+    { "name": "FastAPI", "value": 96 }
   ],
   "resumeUrl": "https://example.com/resume.pdf"
 }

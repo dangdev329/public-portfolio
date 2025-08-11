@@ -43,7 +43,13 @@ export default defineNuxtConfig({
       theme: { default: 'github-light', dark: 'github-dark' }
     }
   },
-  image: {},
+  image: {
+    domains: [
+      'certificates.dev',
+      'api.certificates.dev',
+      'images.credly.com'
+    ]
+  },
   site: {
     url: 'https://example.com',
     name: 'Dang — Nuxt Portfolio',

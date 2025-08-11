@@ -1,8 +1,10 @@
 <template>
-  <div :class="[colorMode.value]" class="min-h-screen flex flex-col app-backdrop">
+  <div class="min-h-screen flex flex-col app-backdrop">
     <!-- Weather effects: rain in dark mode, sun/rainbow in light mode -->
-    <AppRain v-if="isDark" />
-    <AppSunny v-else />
+    <ClientOnly>
+      <AppRain v-if="isDark" />
+      <AppSunny v-else />
+    </ClientOnly>
     <AppCursorSpotlight />
     <AppBackground />
     <AppNav />
@@ -23,5 +25,5 @@ const isDark = computed(() => colorMode.value === 'dark')
 </script>
 
 <style scoped>
-.container { max-width: 960px; }
+.container { max-width: 1100px; }
 </style>
