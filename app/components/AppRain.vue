@@ -205,6 +205,12 @@ function step(now = performance.now()) {
       for (let i = 0; i < boltsToCreate; i++) {
         bolts.push(generateBolt())
       }
+      // Notify audio layer to play thunder with an intensity roughly matching the visual
+      const intensityBase = isDark.value ? 0.7 : 0.6
+      const intensity = Math.min(1, intensityBase + (boltsToCreate - 1) * 0.15 + Math.random() * 0.25)
+      try {
+        window.dispatchEvent(new CustomEvent('rain:flash', { detail: { intensity } }))
+      } catch {}
     }
     if (flashAlpha > 0.001) {
       flashAlpha = Math.max(0, flashAlpha - dt * flashDecayPerMs)

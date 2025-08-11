@@ -39,7 +39,8 @@ let lfo2Gain: GainNode | null = null
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
 // Avoid 404s for optional sample files unless explicitly enabled
-const ENABLE_SAMPLE_AUDIO = false
+const ENABLE_SAMPLE_AUDIO = true
+let lastThunderAt = 0
 
 function createNoiseBuffer(ctx: AudioContext, seconds: number, type: 'white' | 'pink' = 'white') {
   const sampleRate = ctx.sampleRate
@@ -180,13 +181,13 @@ function playThunder(intensity = 1) {
     src.buffer = buffer
     const lp = audioCtx.createBiquadFilter()
     lp.type = 'lowpass'
-    lp.frequency.value = 1800
+    lp.frequency.value = 3500
     const hp = audioCtx.createBiquadFilter()
     hp.type = 'highpass'
-    hp.frequency.value = 60
+    hp.frequency.value = 40
     const gain = audioCtx.createGain()
-    const peak = Math.min(0.9, 0.3 + 0.5 * intensity)
-    const duration = Math.min(4.5, Math.max(2.2, (buffer!.duration) * (0.9 + Math.random() * 0.4)))
+    const peak = Math.min(0.98, 0.45 + 0.55 * intensity)
+    const duration = Math.min(5.5, Math.max(2.8, (buffer!.duration) * (0.95 + Math.random() * 0.4)))
 
     // Envelope: quick attack then long tail
     gain.gain.setValueAtTime(0.0001, now)
@@ -203,21 +204,22 @@ function playThunder(intensity = 1) {
     gain.connect(audioCtx.destination)
     src.start(now)
     src.stop(now + duration + 0.1)
+    src.onended = () => { try { src.disconnect() } catch {}; try { lp.disconnect() } catch {}; try { hp.disconnect() } catch {}; try { gain.disconnect() } catch {} }
     return
   }
 
   // Fallback synthesized thunder (longer)
   const src = audioCtx.createBufferSource()
-  src.buffer = createNoiseBuffer(audioCtx, 3.0, 'white')
+  src.buffer = createNoiseBuffer(audioCtx, 3.0, 'pink')
   const lp = audioCtx.createBiquadFilter()
   lp.type = 'lowpass'
-  lp.frequency.value = 1800
+  lp.frequency.value = 3200
   const hp = audioCtx.createBiquadFilter()
   hp.type = 'highpass'
-  hp.frequency.value = 60
+  hp.frequency.value = 50
   const gain = audioCtx.createGain()
-  const peak = Math.min(0.7, 0.28 + 0.35 * intensity)
-  const duration = 2.4 + Math.random() * 1.3
+  const peak = Math.min(0.95, 0.4 + 0.5 * intensity)
+  const duration = 3.0 + Math.random() * 1.8
   gain.gain.setValueAtTime(0.0001, now)
   gain.gain.exponentialRampToValueAtTime(peak, now + 0.05)
   gain.gain.exponentialRampToValueAtTime(0.02, now + duration)
@@ -229,6 +231,7 @@ function playThunder(intensity = 1) {
   gain.connect(audioCtx.destination)
   src.start(now)
   src.stop(now + duration + 0.1)
+  src.onended = () => { try { src.disconnect() } catch {}; try { lp.disconnect() } catch {}; try { hp.disconnect() } catch {}; try { gain.disconnect() } catch {} }
 }
 
 async function toggleAudio() {
@@ -261,7 +264,18 @@ onMounted(() => {
     const intensity = detail?.intensity ?? 0.8
     // Add slight delay based on distance (lower intensity = farther, longer delay)
     const delayMs = 150 + Math.floor((1 - Math.min(1, Math.max(0, intensity))) * 700) + Math.floor(Math.random() * 150)
-    setTimeout(() => playThunder(intensity), delayMs)
+    setTimeout(async () => {
+      try {
+        if (audioCtx && audioCtx.state !== 'running') await audioCtx.resume()
+      } catch {}
+      // avoid super-rapid duplicates due to multiple flashes
+      const nowMs = Date.now()
+      if (nowMs - lastThunderAt < 300) return
+      lastThunderAt = nowMs
+      // ensure samples are loaded lazily; fallback synth if not
+      if (!thunderBuffers.length) loadThunderSamples()
+      playThunder(intensity)
+    }, delayMs)
   }
   window.addEventListener('rain:flash', flashListener as EventListener)
 })
@@ -275,7 +289,7 @@ onBeforeUnmount(() => {
 })
 
 async function loadThunderSamples() {
-  if (!audioCtx || !ENABLE_SAMPLE_AUDIO) return
+  if (!audioCtx) return
   // Define possible file names; user can drop any subset into /public/audio
   const files = ['thunder-1.mp3', 'thunder-2.mp3', 'thunder-3.mp3', 'thunder-4.mp3']
   const urls = files.map(f => `/audio/${f}`)
