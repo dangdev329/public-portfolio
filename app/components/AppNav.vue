@@ -9,6 +9,7 @@
         <NuxtLink :class="{ 'text-emerald-600': active==='certificates' }" to="#certificates">Certificates</NuxtLink>
         <NuxtLink :class="{ 'text-emerald-600': active==='testimonials' }" to="#testimonials">Testimonials</NuxtLink>
         <NuxtLink :class="{ 'text-emerald-600': active==='skills' }" to="#skills">Skills</NuxtLink>
+        <NuxtLink :class="{ 'text-emerald-600': active==='contact' }" to="#contact">Contact</NuxtLink>
         <ClientOnly>
           <AppSoundToggle />
         </ClientOnly>

@@ -74,9 +74,44 @@
       </div>
     </section>
 
-    
+    <section id="contact" data-section class="full-bleed bg-white/70 dark:bg-slate-900/60 border-y border-slate-200/70 dark:border-slate-800/70 py-12">
+      <div class="container mx-auto px-6">
+        <div class="mx-auto max-w-2xl text-center">
+          <h2 class="text-2xl md:text-3xl font-semibold">Hire Me</h2>
+          <p class="mt-3 text-gray-600 dark:text-gray-300">Have a project in mind? I’m available for freelance and contract work.</p>
+          <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <button type="button" @click="showForm = !showForm" class="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700">
+              {{ showForm ? 'Close Form' : 'Contact Me' }}
+            </button>
+            <a v-if="resumeUrl" :href="resumeUrl" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-md border px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-slate-800">
+              View Resume
+            </a>
+          </div>
 
-    
+          <form v-if="showForm" :action="formAction" method="POST" target="_blank" @submit="submitted = true" class="mt-6 grid gap-4 text-left">
+            <input type="hidden" name="_subject" value="Project inquiry — Portfolio" />
+            <input type="hidden" name="_captcha" value="false" />
+            <div class="grid gap-2">
+              <label for="name" class="text-sm">Name</label>
+              <input id="name" name="name" v-model="name" type="text" required class="w-full rounded-md border px-3 py-2 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700" />
+            </div>
+            <div class="grid gap-2">
+              <label for="email" class="text-sm">Email</label>
+              <input id="email" name="email" v-model="fromEmail" type="email" required class="w-full rounded-md border px-3 py-2 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700" />
+            </div>
+            <div class="grid gap-2">
+              <label for="message" class="text-sm">Message</label>
+              <textarea id="message" name="message" v-model="message" rows="5" required class="w-full rounded-md border px-3 py-2 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700"></textarea>
+            </div>
+            <div class="flex items-center gap-3">
+              <button type="submit" class="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700">Send</button>
+              <span v-if="submitted" class="text-sm text-emerald-600">Thanks! A confirmation tab has opened.</span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
   </div>
 </template>
 
@@ -211,8 +246,14 @@ const skillBars = ref<SkillBarItem[]>([])
 type Testimonial = { name: string; title?: string; quote: string; avatar?: string }
 const testimonials = ref<Testimonial[]>([])
 const resumeUrl = ref<string | null>(null)
-const email = 'hello@example.com'
-const mailtoHref = computed(() => `mailto:${email}?subject=${encodeURIComponent('Project inquiry — Portfolio')}`)
+const email = 'dang329529@gmail.com'
+// Simple hosted form backend (FormSubmit) that sends directly to your email
+const formAction = computed(() => `https://formsubmit.co/${encodeURIComponent(email)}`)
+const showForm = ref(false)
+const submitted = ref(false)
+const name = ref('')
+const fromEmail = ref('')
+const message = ref('')
 onMounted(async () => {
   try {
     const res = await fetch('/profile.json', { cache: 'no-cache' })
