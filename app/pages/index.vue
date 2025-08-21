@@ -220,12 +220,12 @@ function openProject(p: ProjectDoc) {
 
 type CertItem = { title: string; issuer: string; date: string; links?: { url?: string }; thumb?: string }
 const certs: CertItem[] = [
-  {
-    title: 'Certified Vue.js Developer',
+{
+    title: 'Senior Vue.js Developer',
     issuer: 'Vue School / Certificates.dev',
-    date: '2025-08-04',
-    links: { url: 'https://certificates.dev/vuejs/certificates/9f8dea1c-8c97-4773-ac08-6b9630c43834' },
-    thumb: 'https://certificates.dev/.netlify/images?url=https:%2F%2Fapi.certificates.dev%2Fcertificates%2Fthumbnail%2F9f8dea1c-8c97-4773-ac08-6b9630c43834.jpg'
+    date: '2025-08-18',
+    links: { url: 'https://certificates.dev/vuejs/certificates/9faa4932-ef9c-4073-a18b-fada315f6fe9' },
+    thumb: 'https://certificates.dev/.netlify/images?url=https:%2F%2Fapi.certificates.dev%2Fcertificates%2Fthumbnail%2F9faa4932-ef9c-4073-a18b-fada315f6fe9.jpg'
   },
   {
     title: 'EdCHART Certificate',
