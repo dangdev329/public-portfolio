@@ -2,6 +2,15 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+  runtimeConfig: {
+    public: {
+      web3formsKey: '',
+      githubUrl: '',
+      linkedinUrl: '',
+      email: '',
+      resumeUrl: ''
+    }
+  },
   css: ['@@/assets/css/main.css'],
   modules: [
     '@nuxtjs/tailwindcss',
